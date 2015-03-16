@@ -26,4 +26,8 @@ Perhaps needed:
 ]
 
 
-Similar:
+Helpful links:
+[https://github.com/cdnjs/cdnjs](CDNJS API)
+
+Similar projects and their differences:
+[Console Injector](https://github.com/cannoneyed/console-injector): makes you search by name, instead of autocompleting based on what CDNJS has available.
