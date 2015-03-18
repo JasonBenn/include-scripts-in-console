@@ -21,12 +21,12 @@
     return new jbQuery(selection);
   }
 
-  $.get = function(url, callback) {
+  $.get = function(url, successCallback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
       if(xhr.readyState === 4) {
         if(xhr.status === 200) {
-          callback(xhr.responseText);
+          successCallback(xhr.responseText);
         } else {
           log('Error in request to ' + url + '. ' + JSON.stringify(arguments))
         }
@@ -64,12 +64,9 @@
       var latestVersion = new RegExp('\/libs\/' + name + '\/(.+?)\/').exec(library.latest)[1];
       log(name + ' ' + latestVersion);
     })
-  });
-
-  // GET list of libraries
-  // WHEN libraries are loaded
     // LOAD typeahead
-    // REMOVE CLASS disabled from input
+    $('.search').el.removeAttribute('disabled');
+  });
 
   // As they pop up: yamlcss 2.4.12. Hover: see a heart field. Hearts always show up when you're active in the field, stored in Chrome settings.
   // status of the thing you added: to the right.
