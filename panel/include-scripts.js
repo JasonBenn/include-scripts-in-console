@@ -1,45 +1,7 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 (function() {
-
-// // This function is converted to a string and becomes the preprocessor
-// function preprocessor(source, url, listenerName) {
-//   url = url ? url : '(eval)';
-//   url += listenerName ? '_' + listenerName : '';
-//   var prefix = 'window.__preprocessed = window.__preprocessed || [];\n';
-//   prefix += 'window.__preprocessed.push(\'' + url +'\');\n';
-//   var postfix = '\n//# sourceURL=' + url + '.js\n';
-//   return prefix + source + postfix;
-// }
-
-// function extractPreprocessedFiles(onExtracted) {
-//   var expr = 'window.__preprocessed';
-//   function onEval(files, isException) {
-//     if (isException)
-//       throw new Error('Eval failed for ' + expr, isException.value);
-//     onExtracted(files);
-//   }
-//   chrome.devtools.inspectedWindow.eval(expr, onEval);
-// }
-
-// function reloadWithPreprocessor(injectedScript) {
-//   var options = {
-//     ignoreCache: true,
-//     userAgent: undefined,
-//     injectedScript: '(' + injectedScript  + ')()',
-//     preprocessingScript: '(' + preprocessor + ')'
-//   };
-//   chrome.devtools.inspectedWindow.reload(options);
-// }
 
   var jbQuery = function(element) {
     this.el = element;
-  }
-
-  jbQuery.prototype.get = function(url) { 
-    return url; 
   }
 
   jbQuery.prototype.append = function(element) {
@@ -59,23 +21,62 @@
     return new jbQuery(selection);
   }
 
-  $.create = function(tag, content) {
+  $.get = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+      if(xhr.readyState === 4) {
+        if(xhr.status === 200) {
+          callback(xhr.responseText);
+        } else {
+          log('Error in request to ' + url + '. ' + JSON.stringify(arguments))
+        }
+      }
+    }
+    xhr.open("GET", url, true);
+    // xhr.open("GET", chrome.extension.getURL(url), true);
+    xhr.send();
+  }
+
+  $.create = function(tag, content, options) {
     var el = document.createElement(tag);
+    if (options.className) el.className = options.className;
     el.innerHTML = content;
     return el;
   }
 
   function log(message) {
-    var test = $.create('p', message);
-    $('.logger').append(test);
+    var messageEl = $.create('p', message, { className: 'list-item' });
+    $('.logger').append(messageEl);
   }
 
-  log('testing class?!')
+  log('jquery 2.1.2 included.')
+  log('underscore 1.1.0 included.')
 
   function addjQuery() {
     element.innerHTML = 'console.inject = ' + injectFunction.toString();
     document.head.appendChild(element);
   }
+
+  $.get('http://api.cdnjs.com/libraries', function(data) {
+    var libraries = JSON.parse(data).results;
+    libraries.forEach(function(library) {
+      var name = library.name;
+      var latestVersion = new RegExp('\/libs\/' + name + '\/(.+?)\/').exec(library.latest)[1];
+      log(name + ' ' + latestVersion);
+    })
+  });
+
+  // GET list of libraries
+  // WHEN libraries are loaded
+    // LOAD typeahead
+    // REMOVE CLASS disabled from input
+
+  // As they pop up: yamlcss 2.4.12. Hover: see a heart field. Hearts always show up when you're active in the field, stored in Chrome settings.
+  // status of the thing you added: to the right.
+  // What happens when $ already exists, or you overwrite something? Hmm. 
+
+
+  // ADDING EVENT LISTENERS
 
   // function listen() {
   //   var loadButton = document.querySelector('.add-button');
@@ -83,19 +84,5 @@
   // }
 
   // window.addEventListener('load', listen);
-
-// function createRow(url) {
-//   var li = document.createElement('li');
-//   li.textContent = url;
-//   return li;
-// }
-
-// function updateUI(preprocessedFiles) {
-//   var rowContainer = document.querySelector('.js-preprocessed-urls');
-//   rowContainer.innerHTML = '';
-//   preprocessedFiles.forEach(function(url) {
-//     rowContainer.appendChild(createRow(url));
-//   });
-// }
 
 })();
