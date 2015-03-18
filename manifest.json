@@ -8,6 +8,11 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "content_security_policy": "default-src 'self'  chrome-extension-resource: ; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval';  connect-src *; frame-src *;",
-  "devtools_page": "create-panel.html"
+  "devtools_page": "create-panel.html",
+  "permissions": [
+    "http://api.cdnjs.com/*"
+  ]
 }
+
+// While the default policy doesn't restrict connections to hosts, be careful when explicitly adding either the connect-src or default-src directives
+// "content_security_policy": "default-src 'self'  chrome-extension-resource: ; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval';  connect-src *; frame-src *;",
