@@ -1,0 +1,12 @@
+{
+  "name": "include-scripts-in-console",
+  "version": "0.0.0",
+  "homepage": "https://github.com/JasonBenn/include-scripts-in-console",
+  "authors": [
+    "Jason Benn <jasoncbenn@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "typeahead.js": "~0.10.5"
+  }
+}
