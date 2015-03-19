@@ -1,25 +1,25 @@
 (function() {
 
-  var jbQuery = function(element) {
-    this.el = element;
-  }
+  // var jbQuery = function(element) {
+  //   this.el = element;
+  // }
 
-  jbQuery.prototype.append = function(element) {
-    this.el.appendChild(element)
-  }
+  // jbQuery.prototype.append = function(element) {
+  //   this.el.appendChild(element)
+  // }
 
-  var CLASS_SELECTOR = /^\.([\w-]+)$/;
-  var TAG_SELECTOR = /^[^\.#]([\w-]+)$/;
-  var ID_SELECTOR = /^\#([\w-]+)$/;
+  // var CLASS_SELECTOR = /^\.([\w-]+)$/;
+  // var TAG_SELECTOR = /^[^\.#]([\w-]+)$/;
+  // var ID_SELECTOR = /^\#([\w-]+)$/;
 
-  var $ = function(selector) {  
-    if (CLASS_SELECTOR.test(selector)) {
-      var query = CLASS_SELECTOR.exec(selector)[1];
-      var selection = document.getElementsByClassName(query)[0];
-    }
+  // var $ = function(selector) {  
+  //   if (CLASS_SELECTOR.test(selector)) {
+  //     var query = CLASS_SELECTOR.exec(selector)[1];
+  //     var selection = document.getElementsByClassName(query)[0];
+  //   }
 
-    return new jbQuery(selection);
-  }
+  //   return new jbQuery(selection);
+  // }
 
   $.get = function(url, successCallback) {
     var xhr = new XMLHttpRequest();
@@ -37,35 +37,74 @@
     xhr.send();
   }
 
-  $.create = function(tag, content, options) {
-    var el = document.createElement(tag);
-    if (options.className) el.className = options.className;
-    el.innerHTML = content;
-    return el;
+  // $.create = function(tag, content, options) {
+  //   var el = document.createElement(tag);
+  //   if (options.className) el.className = options.className;
+  //   el.innerHTML = content;
+  //   return el;
+  // }
+
+  function log(html) {
+    $('.logger').append(html);
   }
 
-  function log(message) {
-    var messageEl = $.create('p', message, { className: 'list-item' });
-    $('.logger').append(messageEl);
+  function libraryTemplate(library) {
+    var p = document.createElement('p')
+    p.className = 'list-item'
+    p.innerHTML = [
+      '<div class="text-primary">',
+        library.name,
+      '</div>',
+      '<div class="text-secondary">',
+        library.description,
+      '</div>',
+      ].join('')
+    return p;
   }
-
-  log('jquery 2.1.2 included.')
-  log('underscore 1.1.0 included.')
 
   function addjQuery() {
     element.innerHTML = 'console.inject = ' + injectFunction.toString();
     document.head.appendChild(element);
   }
 
-  $.get('http://api.cdnjs.com/libraries', function(data) {
+  function substringMatcher(strings) {
+    return function findMatches(query, callback) {
+      var matches = [];
+      var substringFinder = new RegExp(query, 'i');
+
+      strings.forEach(function(library) {
+        if (substringFinder.test(library.name)) {
+          matches.push(library);
+        }
+      });
+
+      callback(matches);
+    }
+  }
+
+  $.get('http://api.cdnjs.com/libraries?fields=version,description', function(data) {
     var libraries = JSON.parse(data).results;
     libraries.forEach(function(library) {
-      var name = library.name;
-      var latestVersion = new RegExp('\/libs\/' + name + '\/(.+?)\/').exec(library.latest)[1];
-      log(name + ' ' + latestVersion);
-    })
-    // LOAD typeahead
-    $('.search').el.removeAttribute('disabled');
+      log(libraryTemplate(library));
+    });
+
+    $('.search').typeahead(null, {
+      name: 'libraries',
+      displayKey: 'name',
+      source: substringMatcher(libraries),
+      templates: {
+        empty: [
+          '<p class="list-item">',
+          '<div class="text-primary">',
+          'No libraries match current query.',
+          '</div>',
+          '</p>'
+        ].join('\n'),
+        suggestion: libraryTemplate
+      }
+    });
+
+    $('.search').removeAttr('disabled');
   });
 
   // As they pop up: yamlcss 2.4.12. Hover: see a heart field. Hearts always show up when you're active in the field, stored in Chrome settings.
