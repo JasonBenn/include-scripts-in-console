@@ -38,7 +38,7 @@
     return listItemTemplate(library.name, library.description);
   }
 
-  function addjQuery() {
+  function injectLibrary() {
     element.innerHTML = 'console.inject = ' + injectFunction.toString();
     document.head.appendChild(element);
   }
@@ -61,6 +61,14 @@
     }
   }
 
+  $('.search').on('keyup', function(e) {
+    if (e.which === 13) {
+      // should it submit the first time, or the second time?
+      // $('.typeahead').typeahead('val'); returns just the name, not the URL.
+      debugger
+    }
+  })
+
   $.get('http://api.cdnjs.com/libraries?fields=version,description,keywords', function(data) {
     var libraries = JSON.parse(data).results;
     libraries.forEach(function(library) {
@@ -79,6 +87,7 @@
 
     $('.search').removeAttr('disabled');
   });
+
 
   // As they pop up: yamlcss 2.4.12. Hover: see a heart field. Hearts always show up when you're active in the field, stored in Chrome settings.
   // status of the thing you added: to the right.
