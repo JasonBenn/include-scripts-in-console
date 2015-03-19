@@ -1,26 +1,5 @@
 (function() {
 
-  // var jbQuery = function(element) {
-  //   this.el = element;
-  // }
-
-  // jbQuery.prototype.append = function(element) {
-  //   this.el.appendChild(element)
-  // }
-
-  // var CLASS_SELECTOR = /^\.([\w-]+)$/;
-  // var TAG_SELECTOR = /^[^\.#]([\w-]+)$/;
-  // var ID_SELECTOR = /^\#([\w-]+)$/;
-
-  // var $ = function(selector) {  
-  //   if (CLASS_SELECTOR.test(selector)) {
-  //     var query = CLASS_SELECTOR.exec(selector)[1];
-  //     var selection = document.getElementsByClassName(query)[0];
-  //   }
-
-  //   return new jbQuery(selection);
-  // }
-
   $.get = function(url, successCallback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
@@ -37,29 +16,26 @@
     xhr.send();
   }
 
-  // $.create = function(tag, content, options) {
-  //   var el = document.createElement(tag);
-  //   if (options.className) el.className = options.className;
-  //   el.innerHTML = content;
-  //   return el;
-  // }
-
   function log(html) {
     $('.logger').append(html);
   }
 
-  function libraryTemplate(library) {
+  function listItemTemplate(primary, secondary) {    
     var p = document.createElement('p')
     p.className = 'list-item'
     p.innerHTML = [
       '<div class="text-primary">',
-        library.name,
+        primary,
       '</div>',
       '<div class="text-secondary">',
-        library.description,
+        secondary,
       '</div>',
       ].join('')
     return p;
+  }
+
+  function libraryTemplate(library) {
+    return listItemTemplate(library.name, library.description);
   }
 
   function addjQuery() {
@@ -78,11 +54,14 @@
         }
       });
 
+      // Problem: is selectable.
+      // matches.unshift({ name: 'Libraries: ' + matches.length });
+
       callback(matches);
     }
   }
 
-  $.get('http://api.cdnjs.com/libraries?fields=version,description', function(data) {
+  $.get('http://api.cdnjs.com/libraries?fields=version,description,keywords', function(data) {
     var libraries = JSON.parse(data).results;
     libraries.forEach(function(library) {
       log(libraryTemplate(library));
@@ -93,13 +72,7 @@
       displayKey: 'name',
       source: substringMatcher(libraries),
       templates: {
-        empty: [
-          '<p class="list-item">',
-          '<div class="text-primary">',
-          'No libraries match current query.',
-          '</div>',
-          '</p>'
-        ].join('\n'),
+        empty: listItemTemplate('No libraries match your query.').outerHTML,
         suggestion: libraryTemplate
       }
     });
@@ -110,15 +83,5 @@
   // As they pop up: yamlcss 2.4.12. Hover: see a heart field. Hearts always show up when you're active in the field, stored in Chrome settings.
   // status of the thing you added: to the right.
   // What happens when $ already exists, or you overwrite something? Hmm. 
-
-
-  // ADDING EVENT LISTENERS
-
-  // function listen() {
-  //   var loadButton = document.querySelector('.add-button');
-  //   loadButton.addEventListener('click', addjQuery);
-  // }
-
-  // window.addEventListener('load', listen);
 
 })();
