@@ -61,19 +61,21 @@
     }
   }
 
+  // bind to selected event, too.
+
+  var selection;
+
   $('.search').on('keyup', function(e) {
     if (e.which === 13) {
+      console.log('enter key pressed in input')
       // should it submit the first time, or the second time?
       // $('.typeahead').typeahead('val'); returns just the name, not the URL.
-      debugger
+      // debugger
     }
   })
 
   $.get('http://api.cdnjs.com/libraries?fields=version,description,keywords', function(data) {
     var libraries = JSON.parse(data).results;
-    libraries.forEach(function(library) {
-      log(libraryTemplate(library));
-    });
 
     $('.search').typeahead(null, {
       name: 'libraries',
@@ -85,8 +87,25 @@
       }
     });
 
+    $('.search').on('typeahead:selected', function(event, library) {
+      selection = library;
+      console.log('')
+      log(libraryTemplate(library));
+    })
+
     $('.search').removeAttr('disabled');
   });
+
+
+
+  // SELECTED: if TAB, if next keypress is enter, LOAD
+  // SELECTED: if ENTER, LOAD
+  // Can also add with a (++)
+
+  // LOAD clears input, logs, and remembers it for the future so that i can display loaded next to it and make it an invalid selection.
+  // Undo/subtract: reload the page, load the other libraries first.
+  // Favorites: third panel on the right: favorite libraries, with (+) and a filled in <3 that you can deselect.
+
 
 
   // As they pop up: yamlcss 2.4.12. Hover: see a heart field. Hearts always show up when you're active in the field, stored in Chrome settings.
