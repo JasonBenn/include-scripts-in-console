@@ -66,13 +66,15 @@
   var selection;
 
   $('.search').on('keyup', function(e) {
-    if (e.which === 13) {
-      console.log('enter key pressed in input')
-      // should it submit the first time, or the second time?
-      // $('.typeahead').typeahead('val'); returns just the name, not the URL.
-      // debugger
-    }
+    console.log(e.which)
   })
+  //   if (e.which === 13) {
+  //     console.log('enter key pressed in input')
+  //     // should it submit the first time, or the second time?
+  //     // $('.typeahead').typeahead('val'); returns just the name, not the URL.
+  //     // debugger
+  //   }
+  // })
 
   $.get('http://api.cdnjs.com/libraries?fields=version,description,keywords', function(data) {
     var libraries = JSON.parse(data).results;
@@ -82,15 +84,31 @@
       displayKey: 'name',
       source: substringMatcher(libraries),
       templates: {
-        empty: listItemTemplate('No libraries match your query.').outerHTML,
+        empty: function() { return listItemTemplate('No libraries match your query.') },
         suggestion: libraryTemplate
       }
     });
 
-    $('.search').on('typeahead:selected', function(event, library) {
-      selection = library;
-      console.log('')
-      log(libraryTemplate(library));
+    var ENTER_KEY = 13;
+    var TAB_KEY = 11;
+
+    function injectURL(url) {
+
+    }
+
+    $('.search').on('typeahead:selected', function(evt, library) {
+      var keyPressed = evt.handleObj.guid;
+      // debugger
+      if (keyPressed === ENTER_KEY) {
+        injectURL(library.latest);
+        log(libraryTemplate(library));
+      } else if (keyPressed === TAB_KEY) {
+        console.log('Tab key pressed on: ' + library.name);
+      } else {
+        console.log('Something else happened', library)
+      }
+      // tab should complete, dismiss menu, but not submit. enter should submit, and plus button should submit.
+      // enter, button pressing should submit.
     })
 
     $('.search').removeAttr('disabled');
